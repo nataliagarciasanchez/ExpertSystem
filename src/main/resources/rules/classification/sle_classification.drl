@@ -1,0 +1,182 @@
+package rules.classification
+
+dialect "java"
+
+import domain.ANAresult
+import domain.Symptom
+import domain.SymptomType
+import domain.Domain
+import engine.Scorecard
+
+global Scorecard score;
+
+// -------------------- ENTRY RULE --------------------
+rule "Entry: ANA >= 1:80"
+when
+    ANAresult( positive == true, denominator >= 80 )
+then
+    score.setEntryEligible();
+end
+
+
+// -------------------- CONSTITUCIONAL --------------------
+rule "Constitutional: Fever"
+when
+    Symptom(type == SymptomType.FIEBRE, present == true)
+then
+    score.addIfHigher(Domain.CONSTITUTIONAL, 2, true, "Fever >38ºC without infectious cause");
+end
+
+
+// -------------------- HEMATOLOGIC --------------------
+rule "Hematologic: Leukopenia"
+when
+    Symptom(type == SymptomType.LEUCOPENIA, present == true)
+then
+    score.addIfHigher(Domain.HEMATOLOGIC, 3, true, "Leukopenia (<4000/mm³)");
+end
+
+rule "Hematologic: Thrombocytopenia"
+when
+    Symptom(type == SymptomType.TROMBOCITOPENIA, present == true)
+then
+    score.addIfHigher(Domain.HEMATOLOGIC, 4, true, "Thrombocytopenia (<100000/mm³)");
+end
+
+rule "Hematologic: Autoimmune hemolysis"
+when
+    Symptom(type == SymptomType.HEMOLISIS_AUTOIMMUNE, present == true)
+then
+    score.addIfHigher(Domain.HEMATOLOGIC, 4, true, "Autoimmune hemolytic anemia");
+end
+
+
+// -------------------- NEUROPSYCHIATRIC --------------------
+rule "Neuro: Delirium"
+when
+    Symptom(type == SymptomType.DELIRIO, present == true)
+then
+    score.addIfHigher(Domain.NEUROPSYCHIATRIC, 2, true, "Delirium attributable to SLE");
+end
+
+rule "Neuro: Psychosis"
+when
+    Symptom(type == SymptomType.PSICOSIS, present == true)
+then
+    score.addIfHigher(Domain.NEUROPSYCHIATRIC, 3, true, "Psychosis attributable to SLE");
+end
+
+rule "Neuro: Seizures"
+when
+    Symptom(type == SymptomType.CONVULSIONES, present == true)
+then
+    score.addIfHigher(Domain.NEUROPSYCHIATRIC, 5, true, "Seizures without other identifiable cause");
+end
+
+
+// -------------------- MUCOCUTANEOUS --------------------
+rule "Mucocutaneous: Alopecia"
+when
+    Symptom(type == SymptomType.ALOPECIA, present == true)
+then
+    score.addIfHigher(Domain.MUCUTANEOUS, 2, true, "Non-scarring alopecia");
+end
+
+rule "Mucocutaneous: Oral ulcers"
+when
+    Symptom(type == SymptomType.ULCERAS_ORALES, present == true)
+then
+    score.addIfHigher(Domain.MUCUTANEOUS, 2, true, "Painless oral or nasal ulcers");
+end
+
+rule "Mucocutaneous: SCLE/DLE"
+when
+    Symptom(type == SymptomType.LESION_SUBAGUDA_DISCOIDE, present == true)
+then
+    score.addIfHigher(Domain.MUCUTANEOUS, 4, true, "Subacute cutaneous lupus or chronic discoid lupus");
+end
+
+rule "Mucocutaneous: Acute cutaneous lupus"
+when
+    Symptom(type == SymptomType.ERITEMA_AGUDO, present == true)
+then
+    score.addIfHigher(Domain.MUCUTANEOUS, 6, true, "Acute cutaneous lupus (malar or photosensitive rash)");
+end
+
+
+// -------------------- SEROSAL --------------------
+rule "Serosal: Effusion"
+when
+    Symptom(type == SymptomType.DERRAME_SEROSO, present == true)
+then
+    score.addIfHigher(Domain.SEROSAL, 5, true, "Pleural or pericardial effusion");
+end
+
+rule "Serosal: Acute pericarditis"
+when
+    Symptom(type == SymptomType.PERICARDITIS_AGUDA, present == true)
+then
+    score.addIfHigher(Domain.SEROSAL, 6, true, "Acute or chronic pericarditis");
+end
+
+
+// -------------------- MUSCULOSKELETAL --------------------
+rule "MSK: Arthritis"
+when
+    Symptom(type == SymptomType.ARTRITIS, present == true)
+then
+    score.addIfHigher(Domain.MUSCULOSKELETAL, 6, true, "Arthritis in ≥2 joints with stiffness or pain");
+end
+
+
+// -------------------- RENAL --------------------
+rule "Renal: Proteinuria"
+when
+    Symptom(type == SymptomType.PROTEINURIA, present == true)
+then
+    score.addIfHigher(Domain.RENAL, 4, true, "Proteinuria >0.5 g/24h");
+end
+
+rule "Renal: Class III/IV"
+when
+    Symptom(type == SymptomType.NEFRITIS_CLASE_III_IV, present == true)
+then
+    score.addIfHigher(Domain.RENAL, 10, true, "Lupus nephritis class III or IV (biopsy-proven)");
+end
+
+rule "Renal: Class V"
+when
+    Symptom(type == SymptomType.NEFRITIS_CLASE_V, present == true)
+then
+    score.addIfHigher(Domain.RENAL, 8, true, "Lupus nephritis class V (biopsy-proven)");
+end
+
+
+// -------------------- IMMUNOLOGICAL --------------------
+rule "Immunology: anti-dsDNA or anti-Sm"
+when
+    Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addIfHigher(Domain.SLE_SPECIFIC_ABS, 6, false, "Positive anti-dsDNA or anti-Sm antibodies");
+end
+
+rule "Immunology: aPL"
+when
+    Symptom(type == SymptomType.APL, present == true)
+then
+    score.addIfHigher(Domain.APL, 2, false, "Positive antiphospholipid antibodies");
+end
+
+rule "Complement: low C3 or C4"
+when
+    Symptom(type == SymptomType.C3_O_C4_BAJO, present == true)
+then
+    score.addIfHigher(Domain.COMPLEMENT, 3, false, "Low C3 or C4 complement levels");
+end
+
+rule "Complement: low C3 and C4"
+when
+    Symptom(type == SymptomType.C3_Y_C4_BAJOS, present == true)
+then
+    score.addIfHigher(Domain.COMPLEMENT, 4, false, "Simultaneous low C3 and C4 complement levels");
+end

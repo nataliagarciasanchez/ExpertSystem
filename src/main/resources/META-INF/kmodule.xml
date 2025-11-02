@@ -1,0 +1,16 @@
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+    <!-- KieBase para clasificación -->
+    <kbase name="classificationBase" packages="rules.classification">
+        <ksession name="classificationKieSession"/>
+    </kbase>
+
+    <!-- KieBase para diagnóstico diferencial -->
+    <kbase name="differentialBase" packages="rules.differential">
+        <ksession name="differentialKieSession"/>
+    </kbase>
+
+    <!-- KieBase para tratamiento -->
+    <kbase name="treatmentBase" packages="rules.treatment">
+        <ksession name="treatmentKieSession"/>
+    </kbase>
+</kmodule>

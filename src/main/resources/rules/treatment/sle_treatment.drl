@@ -1,0 +1,102 @@
+package rules.treatment
+
+import domain.Symptom;
+import domain.SymptomType;
+import engine.Scorecard;
+import domain.Domain;
+
+global Scorecard score;
+dialect "java"
+
+// ------------ GENERAL TREATMENT------------------------
+rule "General treatment: hydroxychloroquine"
+when
+    eval(score.isEntryEligible())
+then
+    score.addTreatment("Hydroxychloroquine 200–400 mg/day as baseline therapy. " +
+                       "Recommended for all SLE patients unless contraindicated. " +
+                       "Reduces flare frequency and improves survival (EULAR 2023).");
+end
+
+rule "Treatment: glucocorticoid dose reduction"
+when
+    eval(score.isEntryEligible())
+then
+    score.addTreatment("Use glucocorticoids at the lowest possible dose. " +
+                       "Prednisone ≤7.5 mg/day for maintenance. " +
+                       "Consider intravenous methylprednisolone pulses in severe flares.");
+end
+
+// ------------ CUTANEOUS DOMAIN ----------------------------
+rule "Cutaneous treatment: acute or discoid lupus"
+when
+    eval(score.getPointsForDomain(Domain.MUCUTANEOUS) >= 4)
+then
+    score.addTreatment("Strict photoprotection (high SPF sunscreen). " +
+                       "Topical corticosteroids or calcineurin inhibitors for localized lesions. " +
+                       "If refractory, consider antimalarials (hydroxychloroquine) or methotrexate.");
+end
+
+// --------------MUSCULOSKELETAL DOMAIN-----------------------------
+rule "Musculoskeletal treatment: arthritis or myalgia"
+when
+    eval(score.getPointsForDomain(Domain.MUSCULOSKELETAL) >= 6)
+then
+    score.addTreatment("In cases of significant arthritis or myalgia: NSAIDs for mild symptoms. " +
+                       "Low-dose corticosteroids if symptoms persist. " +
+                       "Consider methotrexate or leflunomide as steroid-sparing agents.");
+end
+
+
+// ------------RENAL DOMAIN---------------------------------
+rule "Renal treatment: active lupus nephritis class III/IV or V"
+when
+    eval(score.getPointsForDomain(Domain.RENAL) >= 8)
+then
+    score.addTreatment("Active lupus nephritis (class III–V): induction therapy with mycophenolate mofetil or cyclophosphamide. " +
+                       "Maintenance with mycophenolate or azathioprine. " +
+                       "High-dose intravenous corticosteroid pulses in severe flares.");
+end
+
+
+// --------------NEUROPSYCHIATRIC DOMAIN-------------------------------
+rule "Neuropsychiatric treatment"
+when
+    eval(score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
+then
+    score.addTreatment("Neuropsychiatric manifestations: high-dose intravenous corticosteroids " +
+                       "plus cyclophosphamide or rituximab depending on severity. " +
+                       "Add symptomatic management (anticonvulsants, antipsychotics, etc.).");
+end
+
+// --------------HEMATOLOGIC DOMAIN---------------------------------
+rule "Hematologic treatment"
+when
+    eval(score.getPointsForDomain(Domain.HEMATOLOGIC) >= 3)
+then
+    score.addTreatment("Hematologic manifestations: oral prednisone or intravenous pulses depending on severity. " +
+                       "If refractory, consider intravenous immunoglobulins or rituximab.");
+end
+
+// --------SEROSAL DOMAIN------------------------------
+rule "Serosal treatment"
+when
+    eval(score.getPointsForDomain(Domain.SEROSAL) >= 5)
+then
+    score.addTreatment("Pleural effusion or pericarditis: nonsteroidal anti-inflammatory drugs or low-dose corticosteroids. " +
+                       "If recurrent, consider hydroxychloroquine or colchicine.");
+end
+
+
+// ------------IMMUNOLOGICAL DOMAIN---------------------------------
+rule "Immunologic treatment: antibodies and complement"
+when
+    eval(
+        score.getPointsForDomain(Domain.SLE_SPECIFIC_ABS) >= 6 ||
+        score.getPointsForDomain(Domain.APL) >= 2 ||
+        score.getPointsForDomain(Domain.COMPLEMENT) >= 3
+    )
+then
+    score.addTreatment("Significant immunologic activity: maintain antimalarial and immunosuppressive therapy. " +
+                       "If antiphospholipid antibodies are present, give low-dose aspirin for prophylaxis or anticoagulation if prior thrombosis.");
+end

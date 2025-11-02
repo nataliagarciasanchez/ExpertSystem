@@ -1,0 +1,105 @@
+package rules.differential
+dialect "java"
+
+import domain.Symptom
+import domain.SymptomType
+import domain.Domain
+import engine.Scorecard
+
+global Scorecard score;
+
+// 1) aPL positive without other specific SLE markers → possible primary APS
+rule "DDX: Primary antiphospholipid syndrome"
+when
+    Symptom(type == SymptomType.APL, present == true)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addDifferential("Possible primary antiphospholipid syndrome (aPL positive without anti-dsDNA/Sm). Evaluate for APS.");
+end
+
+// 2) Isolated or nearly isolated arthritis → rheumatoid or osteoarthritis (if <10 points)
+rule "DDX: Rheumatoid arthritis or osteoarthritis"
+when
+    Symptom(type == SymptomType.ARTRITIS, present == true)
+    and eval(score.total() < 10)
+    and not Symptom(type == SymptomType.ERITEMA_AGUDO, present == true)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addDifferential("Sub-threshold arthritis for SLE: consider rheumatoid arthritis or osteoarthritis.");
+end
+
+// 3) Isolated cytopenias → ITP/AHAI or other hematologic causes
+rule "DDX: Non-SLE hematologic disorders"
+when
+    eval(score.total() < 10)
+    and ( Symptom(type == SymptomType.LEUCOPENIA, present == true)
+       or Symptom(type == SymptomType.TROMBOCITOPENIA, present == true)
+       or Symptom(type == SymptomType.HEMOLISIS_AUTOIMMUNE, present == true) )
+    and not Symptom(type == SymptomType.ERITEMA_AGUDO, present == true)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addDifferential("Cytopenias without other strong criteria: consider ITP/AHAI or other hematologic causes.");
+end
+
+// 4) Isolated serositis → viral, post-viral, idiopathic
+rule "DDX: Non-lupus serositis"
+when
+    Symptom(type == SymptomType.DERRAME_SEROSO, present == true) or
+    Symptom(type == SymptomType.PERICARDITIS_AGUDA, present == true)
+    and eval(score.total() < 10)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addDifferential("Sub-threshold serositis: viral or idiopathic pericarditis/pleuritis (exclude infections).");
+end
+
+// 5) Isolated mucocutaneous findings → cutaneous lupus/discoid lupus or photosensitive dermatoses
+rule "DDX: Cutaneous lupus or other dermatoses"
+when
+    eval(score.total() < 10)
+    and ( Symptom(type == SymptomType.LESION_SUBAGUDA_DISCOIDE, present == true)
+       or Symptom(type == SymptomType.ERITEMA_AGUDO, present == true)
+       or Symptom(type == SymptomType.ALOPECIA, present == true)
+       or Symptom(type == SymptomType.ULCERAS_ORALES, present == true) )
+then
+    score.addDifferential("Sub-threshold cutaneous presentation: cutaneous/discoid lupus or other photosensitive dermatoses.");
+end
+
+// 6) Isolated neurological manifestations → search for alternative neurological causes
+rule "DDX: Alternative neurological disorders"
+when
+    eval(score.total() < 10)
+    and ( Symptom(type == SymptomType.DELIRIO, present == true)
+       or Symptom(type == SymptomType.PSICOSIS, present == true)
+       or Symptom(type == SymptomType.CONVULSIONES, present == true) )
+    and not Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+then
+    score.addDifferential("Isolated neurological manifestations: consider primary epilepsy, non-lupus psychosis, or metabolic causes.");
+end
+
+// 7) Isolated proteinuria (no class III/IV/V biopsy) → non-SLE nephropathies
+rule "DDX: Proteinuria not necessarily SLE-related"
+when
+    eval(score.total() < 10)
+    and Symptom(type == SymptomType.PROTEINURIA, present == true)
+    and not Symptom(type == SymptomType.NEFRITIS_CLASE_III_IV, present == true)
+    and not Symptom(type == SymptomType.NEFRITIS_CLASE_V, present == true)
+then
+    score.addDifferential("Sub-threshold proteinuria: consider non-SLE nephropathies (IgA, diabetic, hypertensive).");
+end
+
+// 8) ANA positive + few points → incomplete lupus / UCTD
+rule "DDX: Incomplete SLE / UCTD"
+when
+    eval(score.isEntryEligible() == true && score.total() > 0 && score.total() < 10)
+then
+    score.addDifferential("ANA positive with <10 points: possible incomplete SLE or undifferentiated connective tissue disease (UCTD). Recommend follow-up.");
+end
+
+// 9)
+rule "DDX guard: register sub-threshold case"
+when
+    eval(score.isEntryEligible() == true && score.total() < 10)
+then
+    // Logical marker (does nothing, ensures facts exist for sub-threshold DDX)
+    // Optionally: score.addDifferential("Sub-threshold case (<10 points).");
+end
