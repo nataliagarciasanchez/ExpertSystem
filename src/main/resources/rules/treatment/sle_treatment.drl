@@ -10,86 +10,128 @@ dialect "java"
 
 // ------------ GENERAL TREATMENT------------------------
 rule "General treatment: hydroxychloroquine"
+    salience 100
 when
     eval(score.isEntryEligible())
 then
-    score.addTreatment("Hydroxychloroquine 200–400 mg/day as baseline therapy. " +
-                       "Recommended for all SLE patients unless contraindicated. " +
-                       "Reduces flare frequency and improves survival (EULAR 2023).");
+    score.addTreatment(
+        "Hydroxychloroquine 200–400 mg/day for all patients unless contraindicated. " +
+        "Dose ≤5 mg/kg/day of actual body weight. " +
+        "Shown to reduce flares and improve survival (EULAR 2019–2023). " +
+        "Annual ophthalmologic monitoring recommended."
+    );
 end
 
-rule "Treatment: glucocorticoid dose reduction"
+rule "General treatment: glucocorticoid minimization"
+    salience 95
 when
     eval(score.isEntryEligible())
 then
-    score.addTreatment("Use glucocorticoids at the lowest possible dose. " +
-                       "Prednisone ≤7.5 mg/day for maintenance. " +
-                       "Consider intravenous methylprednisolone pulses in severe flares.");
+    score.addTreatment(
+        "Glucocorticoids should be used only as short-term bridging therapy. " +
+        "Aim for prednisone ≤5 mg/day as soon as feasible and attempt complete withdrawal when possible. " +
+        "(EULAR 2023: strong recommendation)."
+    );
+end
+
+rule "General treatment: glucocorticoid dose reduction"
+    salience 90
+when
+    eval(score.isEntryEligible())
+then
+    score.addTreatment(
+        "Use the lowest effective glucocorticoid dose. " +
+        "Target maintenance prednisone ≤7.5 mg/day with gradual tapering."
+    );
+end
+
+// ------------RENAL DOMAIN---------------------------------
+rule "Renal treatment: active lupus nephritis class III/IV or V"
+    salience 85
+when
+    eval(score.getPointsForDomain(Domain.RENAL) >= 8)
+then
+    score.addTreatment(
+        "Lupus nephritis class III/IV/V: " +
+        "Induction therapy with mycophenolate mofetil (preferred) or cyclophosphamide. " +
+        "Maintenance with mycophenolate or azathioprine. " +
+        "High-dose IV corticosteroid pulses for severe flares."
+    );
 end
 
 // ------------ CUTANEOUS DOMAIN ----------------------------
 rule "Cutaneous treatment: acute or discoid lupus"
+    salience 80
 when
     eval(score.getPointsForDomain(Domain.MUCUTANEOUS) >= 4)
 then
-    score.addTreatment("Strict photoprotection (high SPF sunscreen). " +
-                       "Topical corticosteroids or calcineurin inhibitors for localized lesions. " +
-                       "If refractory, consider antimalarials (hydroxychloroquine) or methotrexate.");
+    score.addTreatment(
+        "Cutaneous lupus (acute/discoid): strict photoprotection (SPF ≥50). " +
+        "Topical corticosteroids or calcineurin inhibitors for localized lesions. " +
+        "If skin disease remains refractory despite baseline antimalarial therapy, consider methotrexate or other systemic steroid-sparing agents."
+    );
+end
+
+// --------------NEUROPSYCHIATRIC DOMAIN-------------------------------
+rule "Neuropsychiatric treatment"
+    salience 75
+when
+    eval(score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
+then
+    score.addTreatment(
+        "Neuropsychiatric lupus (psychosis / seizures): " +
+        "high-dose IV methylprednisolone pulses followed by oral taper, " +
+        "plus cyclophosphamide as first-line immunosuppressant in severe inflammatory NPSLE. " +
+        "Rituximab may be considered in refractory or contraindicated cases. " +
+        "Always add symptomatic treatment (anticonvulsants, antipsychotics, etc.) and manage contributing factors."
+    );
 end
 
 // --------------MUSCULOSKELETAL DOMAIN-----------------------------
 rule "Musculoskeletal treatment: arthritis or myalgia"
+    salience 70
 when
     eval(score.getPointsForDomain(Domain.MUSCULOSKELETAL) >= 6)
 then
-    score.addTreatment("In cases of significant arthritis or myalgia: NSAIDs for mild symptoms. " +
-                       "Low-dose corticosteroids if symptoms persist. " +
-                       "Consider methotrexate or leflunomide as steroid-sparing agents.");
-end
-
-
-// ------------RENAL DOMAIN---------------------------------
-rule "Renal treatment: active lupus nephritis class III/IV or V"
-when
-    eval(score.getPointsForDomain(Domain.RENAL) >= 8)
-then
-    score.addTreatment("Active lupus nephritis (class III–V): induction therapy with mycophenolate mofetil or cyclophosphamide. " +
-                       "Maintenance with mycophenolate or azathioprine. " +
-                       "High-dose intravenous corticosteroid pulses in severe flares.");
-end
-
-
-// --------------NEUROPSYCHIATRIC DOMAIN-------------------------------
-rule "Neuropsychiatric treatment"
-when
-    eval(score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
-then
-    score.addTreatment("Neuropsychiatric manifestations: high-dose intravenous corticosteroids " +
-                       "plus cyclophosphamide or rituximab depending on severity. " +
-                       "Add symptomatic management (anticonvulsants, antipsychotics, etc.).");
+    score.addTreatment(
+        "Musculoskeletal lupus (arthritis): " +
+        "• NSAIDs for mild symptoms, only if no renal or cardiovascular contraindication. " +
+        "• If symptoms persist, use low-dose prednisone (≤7.5 mg/day). " +
+        "• For steroid-sparing therapy: methotrexate is first-line; alternatives include leflunomide or azathioprine."
+    );
 end
 
 // --------------HEMATOLOGIC DOMAIN---------------------------------
 rule "Hematologic treatment"
+    salience 65
 when
     eval(score.getPointsForDomain(Domain.HEMATOLOGIC) >= 3)
 then
-    score.addTreatment("Hematologic manifestations: oral prednisone or intravenous pulses depending on severity. " +
-                       "If refractory, consider intravenous immunoglobulins or rituximab.");
+    score.addTreatment(
+        "Hematologic manifestations: oral prednisone or intravenous pulses depending on severity. " +
+        "Leukopenia alone may not require immunosuppression. " +
+        "If refractory thrombocytopenia or hemolytic anemia, consider intravenous immunoglobulins or rituximab."
+    );
 end
 
 // --------SEROSAL DOMAIN------------------------------
 rule "Serosal treatment"
+    salience 60
 when
     eval(score.getPointsForDomain(Domain.SEROSAL) >= 5)
 then
-    score.addTreatment("Pleural effusion or pericarditis: nonsteroidal anti-inflammatory drugs or low-dose corticosteroids. " +
-                       "If recurrent, consider hydroxychloroquine or colchicine.");
-end
+    score.addTreatment(
+        "Serosal involvement: NSAIDs for mild pleuritis or pericarditis. " +
+        "If inadequate response, use low-dose prednisone (≤0.5 mg/kg/day). " +
+        "For recurrent pericarditis, add colchicine. " +
+        "Maintain hydroxychloroquine in all patients unless contraindicated."
+    );
 
+end
 
 // ------------IMMUNOLOGICAL DOMAIN---------------------------------
 rule "Immunologic treatment: antibodies and complement"
+    salience 55
 when
     eval(
         score.getPointsForDomain(Domain.SLE_SPECIFIC_ABS) >= 6 ||
@@ -97,6 +139,34 @@ when
         score.getPointsForDomain(Domain.COMPLEMENT) >= 3
     )
 then
-    score.addTreatment("Significant immunologic activity: maintain antimalarial and immunosuppressive therapy. " +
-                       "If antiphospholipid antibodies are present, give low-dose aspirin for prophylaxis or anticoagulation if prior thrombosis.");
+    score.addTreatment(
+            "Significant immunologic activity: maintain HCQ and add steroid-sparing immunosuppression " +
+            "(azathioprine, mycophenolate, methotrexate) depending on organ involvement. " +
+            "High-risk aPL without thrombosis: consider low-dose aspirin."
+        );
 end
+
+rule "APS with thrombosis: anticoagulation"
+    salience 52
+when
+    Symptom(type == SymptomType.APL, present == true)
+    and Symptom(type == SymptomType.THROMBOSIS, present == true)
+then
+    score.addTreatment(
+        "APS with thrombosis: long-term anticoagulation with warfarin (EULAR 2023)."
+    );
+end
+
+
+rule "High-risk aPL without thrombosis: aspirin"
+    salience 51
+when
+    Symptom(type == SymptomType.APL, present == true)
+    and not Symptom(type == SymptomType.THROMBOSIS, present == true)
+then
+    score.addTreatment(
+        "High-risk aPL profile without thrombosis: consider low-dose aspirin."
+    );
+end
+
+

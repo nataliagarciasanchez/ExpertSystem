@@ -6,7 +6,7 @@ import java.util.List;
 import engine.Scorecard;
 
 public class PanelTreatment extends JPanel {
-    private JTextArea tratamientoArea;
+    private JTextArea treatmentArea;
     private JButton volverInicioBtn;
     private LupusApp app;
 
@@ -27,16 +27,16 @@ public class PanelTreatment extends JPanel {
         title.setForeground(new Color(30, 60, 120));
         frame.add(title, BorderLayout.NORTH);
 
-        tratamientoArea = new JTextArea();
-        tratamientoArea.setEditable(false);
-        tratamientoArea.setOpaque(false);
-        tratamientoArea.setFont(new Font("SansSerif", Font.PLAIN, 17));
-        tratamientoArea.setForeground(new Color(20, 40, 80));
-        tratamientoArea.setLineWrap(true);
-        tratamientoArea.setWrapStyleWord(true);
-        tratamientoArea.setMargin(new Insets(20, 20, 20, 20));
+        treatmentArea = new JTextArea();
+        treatmentArea.setEditable(false);
+        treatmentArea.setOpaque(false);
+        treatmentArea.setFont(new Font("SansSerif", Font.PLAIN, 17));
+        treatmentArea.setForeground(new Color(20, 40, 80));
+        treatmentArea.setLineWrap(true);
+        treatmentArea.setWrapStyleWord(true);
+        treatmentArea.setMargin(new Insets(20, 20, 20, 20));
 
-        JScrollPane scroll = new JScrollPane(tratamientoArea);
+        JScrollPane scroll = new JScrollPane(treatmentArea);
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -48,7 +48,10 @@ public class PanelTreatment extends JPanel {
         volverInicioBtn = new JButton("← Back to Home");
         volverInicioBtn.setFont(new Font("SansSerif", Font.BOLD, 18));
         volverInicioBtn.setBackground(Color.WHITE);
-        volverInicioBtn.addActionListener(e -> app.showScreen("INICIO"));
+        volverInicioBtn.addActionListener(e -> {
+            app.resetAll();// clean Scorecard + symptoms
+            app.showScreen("INITIAL");
+        });
 
         JPanel bottom = new JPanel();
         bottom.setOpaque(false);
@@ -58,9 +61,9 @@ public class PanelTreatment extends JPanel {
         add(frame);
     }
 
-    public void mostrarTratamiento(List<String> recomendaciones) {
+    public void mostrarTreatment(List<String> recomendaciones) {
         if (recomendaciones == null || recomendaciones.isEmpty()) {
-            tratamientoArea.setText("No treatment recommendations have been generated.");
+            treatmentArea.setText("No treatment recommendations have been generated.");
             return;
         }
 
@@ -69,7 +72,7 @@ public class PanelTreatment extends JPanel {
         for (String rec : recomendaciones) {
             sb.append("• ").append(rec).append("\n\n");
         }
-        tratamientoArea.setText(sb.toString());
-        tratamientoArea.setCaretPosition(0); // vuelve al inicio del texto
+        treatmentArea.setText(sb.toString());
+        treatmentArea.setCaretPosition(0); // vuelve al inicio del texto
     }
 }

@@ -11,10 +11,10 @@ import domain.Domain;
 public class Scorecard {
     private boolean entryEligible = false;
     private final Map<Domain, Integer> points = new EnumMap<>(Domain.class);
-    private final Map<Domain, String> criterios = new EnumMap<>(Domain.class);
+    private final Map<Domain, String> criteria = new EnumMap<>(Domain.class);
     private boolean anyClinical = false;
-    private final LinkedHashSet<String> diferenciales = new LinkedHashSet<>();
-    private final List<String> tratamientos = new ArrayList<>();
+    private final LinkedHashSet<String> differentials = new LinkedHashSet<>();
+    private final List<String> treatments = new ArrayList<>();
 
 
     public void setEntryEligible(){
@@ -30,59 +30,72 @@ public class Scorecard {
      * @param domain type of domain
      * @param pts assigned points
      * @param clinical whether the domain is clinical (vs immunologic)
-     * @param criterio human-readable description of the criterion
+     * @param criteria human-readable description of the criterion
      */
-    public void addIfHigher(Domain domain, int pts, boolean clinical,  String criterio){
-        int current = points.getOrDefault(domain, 0);
+    public void addIfHigher(Domain domain, int pts, boolean clinical,  String criteria){
+        int current = this.points.getOrDefault(domain, 0);
         if(pts > current){
-            points.put(domain, pts);
-            criterios.put(domain, criterio + " → " + pts + " puntos");
+            this.points.put(domain, pts);
+            this.criteria.put(domain, criteria + " → " + pts + " points");
         }
         if(clinical && pts >0){
-            anyClinical = true;
+            this.anyClinical = true;
         }
     }
 
-    public Collection<String> getCriteriosCumplidos() {
-        return criterios.values();
+    public Collection<String> getMetCriteria() {
+        return this.criteria.values();
     }
 
     public int total(){
-        return points.values().stream().mapToInt(Integer::intValue).sum();
+        return this.points.values().stream().mapToInt(Integer::intValue).sum();
     }
 
     public Map<Domain, Integer> getPointsMap() {
-        return points;
+        return this.points;
     }
 
-    public void addTreatment(String tratamiento) {
-        tratamientos.add(tratamiento);
+    public void addTreatment(String treatment) {
+        this.treatments.add(treatment);
     }
 
-    public List<String> getTratamientos() {
-        return tratamientos;
+    public List<String> getTreatments() {
+        return this.treatments;
     }
 
     public int getPointsForDomain(Domain domain) {
-        return points.getOrDefault(domain, 0);
+        return this.points.getOrDefault(domain, 0);
     }
     public void addDifferential(String txt) {
-        if (txt != null && !txt.isBlank()) diferenciales.add(txt.trim());
+        if (txt != null && !txt.isBlank()) this.differentials.add(txt.trim());
     }
 
-    public java.util.List<String> getDiferenciales() {
-        return new java.util.ArrayList<>(diferenciales);
+    public boolean hasNoDifferentials() {
+        return differentials.isEmpty();
+    }
+
+    public java.util.List<String> getDifferentials() {
+        return new java.util.ArrayList<>(this.differentials);
+    }
+
+    public void reset() {
+        this.points.clear();
+        this.criteria.clear();
+        this.differentials.clear();
+        this.treatments.clear();
+        this.entryEligible = false;
+        this.anyClinical = false;
     }
 
 
     @Override
     public String toString() {
         return "engine.Scorecard{" +
-                "entryEligible=" + entryEligible +
-                ", points=" + points +
+                "entryEligible=" + this.entryEligible +
+                ", points=" + this.points +
                 ", total=" + total() +
-                ", anyClinical=" + anyClinical +
-                ", tratamientos=" + tratamientos +
+                ", anyClinical=" + this.anyClinical +
+                ", treatments=" + this.treatments +
                 '}';
     }
 }

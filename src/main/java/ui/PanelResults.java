@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class PanelResultados extends JPanel {
+public class PanelResults extends JPanel {
 
     private JLabel resultadoLabel;
     private JLabel puntosLabel;
@@ -15,7 +15,7 @@ public class PanelResultados extends JPanel {
     private JButton verTratamientoBtn;
 
 
-    public PanelResultados(LupusApp app) {
+    public PanelResults(LupusApp app) {
         setOpaque(false);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
@@ -89,8 +89,8 @@ public class PanelResultados extends JPanel {
         verTratamientoBtn.setFont(new Font("SansSerif", Font.BOLD, 18));
         verTratamientoBtn.setBackground(Color.WHITE);
         verTratamientoBtn.addActionListener(e -> {
-            app.getPanelTreatment().mostrarTratamiento(app.getScorecard().getTratamientos());
-            app.showScreen("TRATAMIENTO");
+            app.getPanelTreatment().mostrarTreatment(app.getScorecard().getTreatments());
+            app.showScreen("TREATMENT");
         });
 
         JPanel bottom = new JPanel();
@@ -138,11 +138,11 @@ public class PanelResultados extends JPanel {
             sb.append(String.format("• %-20s → %2d puntos%n", e.getKey(), e.getValue()));
         }
 
-        if (!score.getCriteriosCumplidos().isEmpty()) {
+        if (!score.getMetCriteria().isEmpty()) {
             sb.append("\n");
             sb.append("FULFILLED CRITERIA\n");
             sb.append("------------------------\n");
-            for (String linea : score.getCriteriosCumplidos()) {
+            for (String linea : score.getMetCriteria()) {
                 sb.append("   - ").append(linea).append("\n");
             }
         }
@@ -156,16 +156,24 @@ public class PanelResultados extends JPanel {
             sb.append("The patient meets the entry criterion (ANA positive ≥1:80) but does not reach 10 points.\n");
         }
 
-        if (score != null && !score.getDiferenciales().isEmpty()) {
+        if (score != null && !score.getDifferentials().isEmpty()) {
             sb.append("\n");
             sb.append("SUGGESTED DIFFERENTIAL DIAGNOSIS:\n");
             sb.append("------------------------\n");
-            for (String d : score.getDiferenciales()) {
+            for (String d : score.getDifferentials()) {
                 sb.append("• ").append(d).append("\n");
             }
         }
 
         desgloseArea.setText(sb.toString());
     }
+
+    public void resetAll() {
+        resultadoLabel.setText("");
+        puntosLabel.setText("");
+        interpretacionLabel.setText("");
+        desgloseArea.setText("");
+    }
+
 
 }

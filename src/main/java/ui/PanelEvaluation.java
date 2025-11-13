@@ -6,9 +6,10 @@ import java.awt.*;
 import domain.ANAresult;
 import engine.Scorecard;
 
-public class PanelEvaluacion extends JPanel {
-
-    public PanelEvaluacion(LupusApp app) {
+public class PanelEvaluation extends JPanel {
+    private JTextField tfAna;
+    private JCheckBox cbAnaPositive;
+    public PanelEvaluation(LupusApp app) {
         setOpaque(false);
         setLayout(new GridBagLayout());
 
@@ -21,9 +22,11 @@ public class PanelEvaluacion extends JPanel {
 
         // ---------- Titulo principal ----------
         JLabel subtitle = new JLabel("Section 1 · ANA Evaluation", SwingConstants.CENTER);
-        subtitle.setFont(new Font("SansSerif", Font.BOLD, 24));
-        subtitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        subtitle.setFont(new Font("SansSerif", Font.BOLD, 28)); // un poco más pequeño que el título principal
+        subtitle.setForeground(new Color(30, 60, 120)); // mismo color que "Evaluation Results"
+        subtitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0)); // margen arriba y abajo
         frame.add(subtitle, BorderLayout.NORTH);
+
 
         // ---------- Panel principal  ----------
         JPanel mainPanel = new JPanel();
@@ -32,7 +35,7 @@ public class PanelEvaluacion extends JPanel {
 
         // ---------- Explicacion ----------
         JLabel anaExplanation = new JLabel("<html><div style='width:880px; text-align:justify;'>"
-                + "<b>Purpose of this section:</b> to verify whether the patient meets the mandatory entry criterion "
+                + "This section verifies whether the patient meets the mandatory entry criterion "
                 + "according to the <b>EULAR/ACR 2019</b> classification criteria.<br><br>"
                 + "The <b>ANA (Antinuclear Antibody)</b> test must be positive at a titer equal to or higher than <b>1:80</b> "
                 + "measured by indirect immunofluorescence on HEp-2 cells. "
@@ -51,14 +54,14 @@ public class PanelEvaluacion extends JPanel {
 
         JLabel lblAna = new JLabel("ANA titer (denominator):");
         lblAna.setFont(new Font("SansSerif", Font.PLAIN, 19));
-        JTextField tfAna = new JTextField("");
+
+        tfAna = new JTextField("");
         tfAna.setFont(new Font("SansSerif", Font.PLAIN, 19));
         tfAna.setPreferredSize(new Dimension(150, 42));
         tfAna.setBackground(Color.WHITE);
         tfAna.setForeground(Color.BLACK);
 
-
-        JCheckBox cbAnaPositive = new JCheckBox("ANA positive");
+        cbAnaPositive = new JCheckBox("ANA positive");
         cbAnaPositive.setFont(new Font("SansSerif", Font.PLAIN, 19));
         cbAnaPositive.setOpaque(false);
 
@@ -77,8 +80,8 @@ public class PanelEvaluacion extends JPanel {
         evaluarBtn.setPreferredSize(new Dimension(420, 35));
         evaluarBtn.addActionListener(e -> {
             try {
-                boolean isPositive = cbAnaPositive.isSelected();
-                int denominator = Integer.parseInt(tfAna.getText().trim());
+                boolean isPositive = this.cbAnaPositive.isSelected();
+                int denominator = Integer.parseInt(this.tfAna.getText().trim());
 
                 // Hechos de dominio
                 ANAresult ana = new ANAresult(isPositive, denominator);
@@ -96,14 +99,14 @@ public class PanelEvaluacion extends JPanel {
                 ksession.dispose();
 
                 if (score.isEntryEligible()) {
-                    app.showScreen("EVALUACION2");
+                    app.showScreen("EVALUATION2");
                 } else {
-                    app.getPanelResultados().mostrarDiagnostico(
+                    app.getPanelResults().mostrarDiagnostico(
                             "Not eligible (ANA negative or <1:80)",
                             0,
                             score
                     );
-                    app.showScreen("RESULTADOS");
+                    app.showScreen("RESULTS");
                 }
 
             } catch (NumberFormatException ex) {
@@ -136,5 +139,9 @@ public class PanelEvaluacion extends JPanel {
 
         add(wrapper);
 
+    }
+    public void resetAll() {
+        this.tfAna.setText("");
+        this.cbAnaPositive.setSelected(false);
     }
 }

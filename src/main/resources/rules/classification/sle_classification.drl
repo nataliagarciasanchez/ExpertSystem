@@ -12,6 +12,7 @@ global Scorecard score;
 
 // -------------------- ENTRY RULE --------------------
 rule "Entry: ANA >= 1:80"
+    salience 100
 when
     ANAresult( positive == true, denominator >= 80 )
 then
@@ -21,8 +22,9 @@ end
 
 // -------------------- CONSTITUCIONAL --------------------
 rule "Constitutional: Fever"
+    salience 80
 when
-    Symptom(type == SymptomType.FIEBRE, present == true)
+    Symptom(type == SymptomType.FEVER, numericValue != null, numericValue > 38.0)
 then
     score.addIfHigher(Domain.CONSTITUTIONAL, 2, true, "Fever >38ºC without infectious cause");
 end
@@ -30,22 +32,25 @@ end
 
 // -------------------- HEMATOLOGIC --------------------
 rule "Hematologic: Leukopenia"
+    salience 70
 when
-    Symptom(type == SymptomType.LEUCOPENIA, present == true)
+    Symptom(type == SymptomType.LEUKOPENIA, numericValue != null, numericValue < 4000.0)
 then
     score.addIfHigher(Domain.HEMATOLOGIC, 3, true, "Leukopenia (<4000/mm³)");
 end
 
 rule "Hematologic: Thrombocytopenia"
+    salience 70
 when
-    Symptom(type == SymptomType.TROMBOCITOPENIA, present == true)
+    Symptom(type == SymptomType.THROMBOCYTOPENIA, numericValue != null, numericValue < 100000.0)
 then
     score.addIfHigher(Domain.HEMATOLOGIC, 4, true, "Thrombocytopenia (<100000/mm³)");
 end
 
 rule "Hematologic: Autoimmune hemolysis"
+    salience 60
 when
-    Symptom(type == SymptomType.HEMOLISIS_AUTOIMMUNE, present == true)
+    Symptom(type == SymptomType.AUTOIMMUNE_HEMOLYSIS, present == true)
 then
     score.addIfHigher(Domain.HEMATOLOGIC, 4, true, "Autoimmune hemolytic anemia");
 end
@@ -53,22 +58,25 @@ end
 
 // -------------------- NEUROPSYCHIATRIC --------------------
 rule "Neuro: Delirium"
+    salience 60
 when
-    Symptom(type == SymptomType.DELIRIO, present == true)
+    Symptom(type == SymptomType.DELIRIUM, present == true)
 then
     score.addIfHigher(Domain.NEUROPSYCHIATRIC, 2, true, "Delirium attributable to SLE");
 end
 
 rule "Neuro: Psychosis"
+    salience 60
 when
-    Symptom(type == SymptomType.PSICOSIS, present == true)
+    Symptom(type == SymptomType.PSYCHOSIS, present == true)
 then
     score.addIfHigher(Domain.NEUROPSYCHIATRIC, 3, true, "Psychosis attributable to SLE");
 end
 
 rule "Neuro: Seizures"
+    salience 60
 when
-    Symptom(type == SymptomType.CONVULSIONES, present == true)
+    Symptom(type == SymptomType.SEIZURES, present == true)
 then
     score.addIfHigher(Domain.NEUROPSYCHIATRIC, 5, true, "Seizures without other identifiable cause");
 end
@@ -76,6 +84,7 @@ end
 
 // -------------------- MUCOCUTANEOUS --------------------
 rule "Mucocutaneous: Alopecia"
+    salience 50
 when
     Symptom(type == SymptomType.ALOPECIA, present == true)
 then
@@ -83,22 +92,25 @@ then
 end
 
 rule "Mucocutaneous: Oral ulcers"
+    salience 50
 when
-    Symptom(type == SymptomType.ULCERAS_ORALES, present == true)
+    Symptom(type == SymptomType.ORAL_ULCERS, present == true)
 then
     score.addIfHigher(Domain.MUCUTANEOUS, 2, true, "Painless oral or nasal ulcers");
 end
 
 rule "Mucocutaneous: SCLE/DLE"
+    salience 50
 when
-    Symptom(type == SymptomType.LESION_SUBAGUDA_DISCOIDE, present == true)
+    Symptom(type == SymptomType.SUBACUTE_DISCOID_LESION, present == true)
 then
     score.addIfHigher(Domain.MUCUTANEOUS, 4, true, "Subacute cutaneous lupus or chronic discoid lupus");
 end
 
 rule "Mucocutaneous: Acute cutaneous lupus"
+    salience 50
 when
-    Symptom(type == SymptomType.ERITEMA_AGUDO, present == true)
+    Symptom(type == SymptomType.ACUTE_RASH, present == true)
 then
     score.addIfHigher(Domain.MUCUTANEOUS, 6, true, "Acute cutaneous lupus (malar or photosensitive rash)");
 end
@@ -106,15 +118,17 @@ end
 
 // -------------------- SEROSAL --------------------
 rule "Serosal: Effusion"
+    salience 50
 when
-    Symptom(type == SymptomType.DERRAME_SEROSO, present == true)
+    Symptom(type == SymptomType.SEROUS_EFFUSION, present == true)
 then
     score.addIfHigher(Domain.SEROSAL, 5, true, "Pleural or pericardial effusion");
 end
 
 rule "Serosal: Acute pericarditis"
+    salience 50
 when
-    Symptom(type == SymptomType.PERICARDITIS_AGUDA, present == true)
+    Symptom(type == SymptomType.ACUTE_PERICARDITIS, present == true)
 then
     score.addIfHigher(Domain.SEROSAL, 6, true, "Acute or chronic pericarditis");
 end
@@ -122,8 +136,9 @@ end
 
 // -------------------- MUSCULOSKELETAL --------------------
 rule "MSK: Arthritis"
+    salience 50
 when
-    Symptom(type == SymptomType.ARTRITIS, present == true)
+    Symptom(type == SymptomType.ARTHRITIS, present == true)
 then
     score.addIfHigher(Domain.MUSCULOSKELETAL, 6, true, "Arthritis in ≥2 joints with stiffness or pain");
 end
@@ -131,22 +146,25 @@ end
 
 // -------------------- RENAL --------------------
 rule "Renal: Proteinuria"
+    salience 80
 when
-    Symptom(type == SymptomType.PROTEINURIA, present == true)
+    Symptom(type == SymptomType.PROTEINURIA, numericValue != null, numericValue > 0.5)
 then
     score.addIfHigher(Domain.RENAL, 4, true, "Proteinuria >0.5 g/24h");
 end
 
 rule "Renal: Class III/IV"
+    salience 70
 when
-    Symptom(type == SymptomType.NEFRITIS_CLASE_III_IV, present == true)
+    Symptom(type == SymptomType.NEPHRITIS_CLASS_III_IV, present == true)
 then
     score.addIfHigher(Domain.RENAL, 10, true, "Lupus nephritis class III or IV (biopsy-proven)");
 end
 
 rule "Renal: Class V"
+    salience 70
 when
-    Symptom(type == SymptomType.NEFRITIS_CLASE_V, present == true)
+    Symptom(type == SymptomType.NEPHRITIS_CLASS_V, present == true)
 then
     score.addIfHigher(Domain.RENAL, 8, true, "Lupus nephritis class V (biopsy-proven)");
 end
@@ -154,13 +172,15 @@ end
 
 // -------------------- IMMUNOLOGICAL --------------------
 rule "Immunology: anti-dsDNA or anti-Sm"
+    salience 70
 when
-    Symptom(type == SymptomType.ANTI_DSDNA_O_ANTI_SM, present == true)
+    Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
 then
     score.addIfHigher(Domain.SLE_SPECIFIC_ABS, 6, false, "Positive anti-dsDNA or anti-Sm antibodies");
 end
 
 rule "Immunology: aPL"
+    salience 60
 when
     Symptom(type == SymptomType.APL, present == true)
 then
@@ -168,15 +188,17 @@ then
 end
 
 rule "Complement: low C3 or C4"
+    salience 60
 when
-    Symptom(type == SymptomType.C3_O_C4_BAJO, present == true)
+    Symptom(type == SymptomType.LOW_C3_OR_C4, present == true)
 then
     score.addIfHigher(Domain.COMPLEMENT, 3, false, "Low C3 or C4 complement levels");
 end
 
 rule "Complement: low C3 and C4"
+    salience 60
 when
-    Symptom(type == SymptomType.C3_Y_C4_BAJOS, present == true)
+    Symptom(type == SymptomType.LOW_C3_AND_C4, present == true)
 then
     score.addIfHigher(Domain.COMPLEMENT, 4, false, "Simultaneous low C3 and C4 complement levels");
 end

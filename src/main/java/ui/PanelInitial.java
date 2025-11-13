@@ -2,10 +2,9 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+public class PanelInitial extends JPanel {
 
-public class PanelInicio extends JPanel {
-
-    public PanelInicio(LupusApp app) {
+    public PanelInitial(LupusApp app) {
         setOpaque(false);
         setLayout(new GridBagLayout());
 
@@ -16,12 +15,12 @@ public class PanelInicio extends JPanel {
 
         JLabel text = new JLabel(
                 "<html><div style='text-align: justify; width: 700px;'>"
-                + "This system applies the <b>EULAR/ACR 2019</b> classification criteria "
-                + "for the diagnosis of <b>Systemic Lupus Erythematosus (SLE)</b>.<br><br>"
-                + "It allows the clinician to enter the patient's clinical and immunological data, "
-                + "process them through logical inference, and automatically obtain a report "
-                + "with the corresponding diagnostic score."
-                + "</div></html>");
+                        + "This system applies the <b>EULAR/ACR 2019</b> classification criteria "
+                        + "for the diagnosis of <b>Systemic Lupus Erythematosus (SLE)</b>.<br><br>"
+                        + "It allows the clinician to enter the patient's clinical and immunological data, "
+                        + "process them through logical inference, and automatically obtain a report "
+                        + "with the corresponding diagnostic score."
+                        + "</div></html>");
         text.setFont(new Font("SansSerif", Font.PLAIN, 18));
         text.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -31,7 +30,7 @@ public class PanelInicio extends JPanel {
         start.setBackground(Color.WHITE);
         start.setAlignmentX(Component.CENTER_ALIGNMENT);
         start.setMaximumSize(new Dimension(420, 75));
-        start.addActionListener(e -> app.showScreen("EVALUACION"));
+        start.addActionListener(e -> app.showScreen("EVALUATION"));
 
         frame.add(text);
         frame.add(Box.createVerticalStrut(40));

@@ -5,20 +5,22 @@ import domain.ANAresult;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 
 public class LupusApp extends JFrame {
 
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
 
-    private PanelInicio panelInicio;
-    private PanelEvaluacion panelEvaluacion;
+    private final PanelInitial panelInitial;
+    private final PanelEvaluation panelEvaluation;
 
-    private PanelEvaluacion2 panelEvaluacion2;
-    private PanelResultados panelResultados;
-    private PanelTreatment panelTreatment;
+    private final PanelEvaluation2 panelEvaluation2;
+    private final PanelResults panelResults;
+    private final PanelTreatment panelTreatment;
 
-    private Image backgroundImage;
+    private final Image backgroundImage;
 
     private final Scorecard scorecard = new Scorecard();
     private ANAresult anaResult;
@@ -34,11 +36,17 @@ public class LupusApp extends JFrame {
     public Scorecard getScorecard() { return scorecard; }
 
     public LupusApp() {
-        setTitle("Expert System for Lupus Diagnosis");
+        setTitle("Clinical Decision Support System for Lupus Diagnosis");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // pantalla completa
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // full screen
 
-        backgroundImage = new ImageIcon(getClass().getResource("/images/medical_background.jpg")).getImage();
+        URL imageUrl = getClass().getResource("/images/medical_background.jpg");
+        if (imageUrl != null) {
+            backgroundImage = new ImageIcon(imageUrl).getImage();
+        } else {
+            System.err.println("⚠️ Warning: medical_background.jpg not found in resources!");
+            backgroundImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        }
 
         JPanel backgroundPanel = new JPanel() {
             @Override
@@ -50,44 +58,57 @@ public class LupusApp extends JFrame {
         backgroundPanel.setLayout(new BorderLayout());
         setContentPane(backgroundPanel);
 
-        // ---------- Titulo fijo ----------
-        JLabel titleLabel = new JLabel("Expert System for Lupus Diagnosis", SwingConstants.CENTER);
+        // ---------- Fixed title ----------
+        JLabel titleLabel = new JLabel("Clinical Decision Support System for Lupus Diagnosis", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 48));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(140, 0, 40, 0));
         backgroundPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // ---------- Contenedor central ----------
+        // ---------- Central container ----------
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         mainPanel.setOpaque(false);
         backgroundPanel.add(mainPanel, BorderLayout.CENTER);
 
-        // ---------- Paneles del sistema ----------
-        panelInicio = new PanelInicio(this);
-        panelEvaluacion = new PanelEvaluacion(this);
-        panelEvaluacion2 = new PanelEvaluacion2(this);
-        panelResultados = new PanelResultados(this);
+        // ---------- System panels ----------
+        panelInitial = new PanelInitial(this);
+        panelEvaluation = new PanelEvaluation(this);
+        panelEvaluation2 = new PanelEvaluation2(this);
+        panelResults = new PanelResults(this);
         panelTreatment = new PanelTreatment(this);
 
-        mainPanel.add(panelInicio, "INICIO");
-        mainPanel.add(panelEvaluacion, "EVALUACION");
-        mainPanel.add(panelEvaluacion2, "EVALUACION2");
-        mainPanel.add(panelResultados, "RESULTADOS");
-        mainPanel.add(panelTreatment, "TRATAMIENTO");
+        mainPanel.add(panelInitial, "INITIAL");
+        mainPanel.add(panelEvaluation, "EVALUATION");
+        mainPanel.add(panelEvaluation2, "EVALUATION2");
+        mainPanel.add(panelResults, "RESULTS");
+        mainPanel.add(panelTreatment, "TREATMENT");
 
 
-        showScreen("INICIO");
+        showScreen("INITIAL");
     }
 
     public void showScreen(String name) {
         cardLayout.show(mainPanel, name);
     }
 
-    public PanelResultados getPanelResultados() {
-        return panelResultados;
+    public PanelResults getPanelResults() {
+        return panelResults;
     }
     public PanelTreatment getPanelTreatment() { return panelTreatment; }
+
+    public void resetAll() {
+        // Clean scorecard and ANA result
+        scorecard.reset();
+        anaResult = null;
+
+        // Clean symptom fields
+        panelEvaluation.resetAll();
+        panelEvaluation2.resetAll();
+        panelResults.resetAll();
+        panelTreatment.mostrarTreatment(null);
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LupusApp().setVisible(true));

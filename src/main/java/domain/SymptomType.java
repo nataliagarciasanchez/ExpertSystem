@@ -2,48 +2,57 @@ package domain;
 
 public enum SymptomType {
     // ---- Constitucional----
-    FIEBRE,
+    FEVER,
 
     // --- Mucocutaneous ----
     ALOPECIA,
-    ULCERAS_ORALES,
-    LESION_SUBAGUDA_DISCOIDE,
-    ERITEMA_AGUDO,
+    ORAL_ULCERS,
+    SUBACUTE_DISCOID_LESION,
+    ACUTE_RASH,
 
     // --- Musculoskeletal ---
-    ARTRITIS,
+    ARTHRITIS,
 
     // --- Serosal ---
-    DERRAME_SEROSO,
-    PERICARDITIS_AGUDA,
+    SEROUS_EFFUSION,
+    ACUTE_PERICARDITIS,
 
     // --- Renal ---
     PROTEINURIA,
-    NEFRITIS_CLASE_III_IV,
-    NEFRITIS_CLASE_V,
+    NEPHRITIS_CLASS_III_IV,
+    NEPHRITIS_CLASS_V,
 
     // --- Neuropsychiatric ---
-    DELIRIO,
-    PSICOSIS,
-    CONVULSIONES,
+    DELIRIUM,
+    PSYCHOSIS,
+    SEIZURES,
 
     // --- Hematologic ---
-    LEUCOPENIA,
-    TROMBOCITOPENIA,
-    HEMOLISIS_AUTOIMMUNE,
+    LEUKOPENIA,
+    THROMBOCYTOPENIA,
+    AUTOIMMUNE_HEMOLYSIS,
 
     // --- Immunologic ---
-    ANTI_DSDNA_O_ANTI_SM,
-    APL, C3_O_C4_BAJO,
-    C3_Y_C4_BAJOS,
+    ANTI_DSDNA_OR_ANTI_SM,
+    APL,
+    LOW_C3_OR_C4,
+    LOW_C3_AND_C4,
 
     // --- Non-EULAR symptoms but supplementary symptoms ------
-    FATIGA,
-    ERITEMA,
+    FATIGUE,
     RAYNAUD,
-    ENGROSAMIENTO_CUTANEO,
-    DEBILIDAD_MUSCULAR,
-    CK_ELEVADA
+    SKIN_THICKENING,
+    MUSCLE_WEAKNESS,
+    ELEVATED_CK,
+    SICCA,
+    ANTI_SSA_RO,
+    ANTI_SSB_LA,
+    ANCA,
+    HEMATURIA,
+    ANTI_HISTONE,
+    DRUG_EXPOSURE_DIL,
+    ANTI_U1RNP,
+    THROMBOSIS
 
 }
 
