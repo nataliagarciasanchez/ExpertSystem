@@ -148,7 +148,7 @@ end
 rule "DDX guard: fallback UCTD"
     salience 0
 when
-    eval(score.isEntryEligible() == true && score.total() > 0 && score.total() < 10 && score.hasNoDifferentials())
+    eval(score.isEntryEligible() == true && score.total() > 0 && score.total() < 10 && score.hasDifferentials())
 then
     score.addDifferential(
         "ANA positive but <10 points, no other differential pattern detected: consider UCTD."
