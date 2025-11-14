@@ -70,13 +70,24 @@ public class Scorecard {
         if (txt != null && !txt.isBlank()) this.differentials.add(txt.trim());
     }
 
-    public boolean hasNoDifferentials() {
-        return differentials.isEmpty();
+    public boolean hasDifferentials() {
+        return !this.differentials.isEmpty();
     }
+
+    public boolean hasDifferentialName(String name) {
+        return differentials.contains(name);
+    }
+
+
 
     public java.util.List<String> getDifferentials() {
         return new java.util.ArrayList<>(this.differentials);
     }
+
+    public Set<String> getDifferentialsSet() {
+        return this.differentials;
+    }
+
 
     public void reset() {
         this.points.clear();

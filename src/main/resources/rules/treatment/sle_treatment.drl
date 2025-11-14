@@ -12,32 +12,33 @@ dialect "java"
 rule "General treatment: hydroxychloroquine"
     salience 100
 when
-    eval(score.isEntryEligible())
+    eval(score.isEntryEligible() && score.total() >= 10)
 then
     score.addTreatment(
-        "Hydroxychloroquine 200–400 mg/day for all patients unless contraindicated. " +
-        "Dose ≤5 mg/kg/day of actual body weight. " +
-        "Shown to reduce flares and improve survival (EULAR 2019–2023). " +
+        "Hydroxychloroquine 200–400 mg/day for all patients with SLE unless contraindicated. " +
+        "Dose ≤5 mg/kg/day. Reduces flares and improves survival (EULAR 2019–2023). " +
         "Annual ophthalmologic monitoring recommended."
     );
 end
 
+
 rule "General treatment: glucocorticoid minimization"
     salience 95
 when
-    eval(score.isEntryEligible())
+    eval(score.isEntryEligible() && score.total() >= 10)
 then
     score.addTreatment(
-        "Glucocorticoids should be used only as short-term bridging therapy. " +
-        "Aim for prednisone ≤5 mg/day as soon as feasible and attempt complete withdrawal when possible. " +
-        "(EULAR 2023: strong recommendation)."
+        "Use glucocorticoids only as short-term bridging therapy. " +
+        "Aim for prednisone ≤5 mg/day with withdrawal if possible. " +
+        "(EULAR 2023)."
     );
 end
+
 
 rule "General treatment: glucocorticoid dose reduction"
     salience 90
 when
-    eval(score.isEntryEligible())
+    eval(score.isEntryEligible() && score.total() >= 10)
 then
     score.addTreatment(
         "Use the lowest effective glucocorticoid dose. " +
@@ -45,11 +46,12 @@ then
     );
 end
 
+
 // ------------RENAL DOMAIN---------------------------------
 rule "Renal treatment: active lupus nephritis class III/IV or V"
     salience 85
 when
-    eval(score.getPointsForDomain(Domain.RENAL) >= 8)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.RENAL) >= 8)
 then
     score.addTreatment(
         "Lupus nephritis class III/IV/V: " +
@@ -63,7 +65,7 @@ end
 rule "Cutaneous treatment: acute or discoid lupus"
     salience 80
 when
-    eval(score.getPointsForDomain(Domain.MUCUTANEOUS) >= 4)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.MUCUTANEOUS) >= 4)
 then
     score.addTreatment(
         "Cutaneous lupus (acute/discoid): strict photoprotection (SPF ≥50). " +
@@ -76,7 +78,7 @@ end
 rule "Neuropsychiatric treatment"
     salience 75
 when
-    eval(score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
 then
     score.addTreatment(
         "Neuropsychiatric lupus (psychosis / seizures): " +
@@ -91,7 +93,7 @@ end
 rule "Musculoskeletal treatment: arthritis or myalgia"
     salience 70
 when
-    eval(score.getPointsForDomain(Domain.MUSCULOSKELETAL) >= 6)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.MUSCULOSKELETAL) >= 6)
 then
     score.addTreatment(
         "Musculoskeletal lupus (arthritis): " +
@@ -105,7 +107,7 @@ end
 rule "Hematologic treatment"
     salience 65
 when
-    eval(score.getPointsForDomain(Domain.HEMATOLOGIC) >= 3)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.HEMATOLOGIC) >= 3)
 then
     score.addTreatment(
         "Hematologic manifestations: oral prednisone or intravenous pulses depending on severity. " +
@@ -118,7 +120,7 @@ end
 rule "Serosal treatment"
     salience 60
 when
-    eval(score.getPointsForDomain(Domain.SEROSAL) >= 5)
+    eval(score.total() >= 10 && score.getPointsForDomain(Domain.SEROSAL) >= 5)
 then
     score.addTreatment(
         "Serosal involvement: NSAIDs for mild pleuritis or pericarditis. " +
@@ -134,9 +136,10 @@ rule "Immunologic treatment: antibodies and complement"
     salience 55
 when
     eval(
-        score.getPointsForDomain(Domain.SLE_SPECIFIC_ABS) >= 6 ||
-        score.getPointsForDomain(Domain.APL) >= 2 ||
-        score.getPointsForDomain(Domain.COMPLEMENT) >= 3
+            score.total() >= 10 &&
+            ( score.getPointsForDomain(Domain.SLE_SPECIFIC_ABS) >= 6 ||
+              score.getPointsForDomain(Domain.APL) >= 2 ||
+              score.getPointsForDomain(Domain.COMPLEMENT) >= 3 )
     )
 then
     score.addTreatment(
@@ -168,5 +171,80 @@ then
         "High-risk aPL profile without thrombosis: consider low-dose aspirin."
     );
 end
+
+rule "Fallback: further diagnostic evaluation required"
+    salience 5
+when
+   eval(!score.isEntryEligible() || score.total() < 10)
+       and eval(score.hasDifferentials())
+then
+    score.addTreatment(
+        "Further diagnostic evaluation is required to confirm or rule out diseases in the differential list. " +
+        "Current clinical and immunological data are insufficient for a definitive diagnosis."
+    );
+end
+
+
+rule "DDX follow-up: Sjogren"
+    salience 4
+when
+    eval(score.hasDifferentialName("Sjögren syndrome"))
+then
+    score.addTreatment(
+        "Sjögren suspected: consider Schirmer test, salivary gland ultrasound, anti-SSA/SSB titers, and minor salivary gland biopsy if needed."
+    );
+end
+
+
+rule "DDX follow-up: Drug-induced lupus"
+    salience 4
+when
+    eval(score.hasDifferentialName("Drug-induced lupus (DIL)"))
+then
+    score.addTreatment(
+        "Suspected drug-induced lupus: review medication history, check anti-histone antibodies, and assess improvement after drug withdrawal."
+    );
+end
+
+rule "DDX follow-up: Myositis"
+    salience 4
+when
+    eval(score.hasDifferentialName("Inflammatory myopathy"))
+then
+    score.addTreatment(
+        "Myositis suspected: check CK, aldolase, EMG, muscle MRI, and myositis-specific antibodies (MDA5, Mi-2, TIF1γ, etc.)."
+    );
+end
+
+rule "DDX follow-up: MCTD"
+    salience 4
+when
+    eval(score.hasDifferentialName("Mixed connective tissue disease (MCTD)"))
+then
+    score.addTreatment(
+        "MCTD suspected: evaluate anti-U1-RNP titers, Raynaud pattern, swollen fingers, and muscle involvement."
+    );
+end
+
+rule "DDX follow-up: ANCA vasculitis"
+    salience 4
+when
+    eval(score.hasDifferentialName("ANCA-associated vasculitis"))
+then
+    score.addTreatment(
+        "ANCA vasculitis suspected: consider ANCA titers (PR3/MPO), urinalysis for hematuria, kidney function, chest CT for pulmonary involvement."
+    );
+end
+
+rule "DDX follow-up: Viral mimicker"
+    salience 4
+when
+    eval(score.hasDifferentialName("Viral mimic of SLE"))
+then
+    score.addTreatment(
+        "Viral infection suspected: consider PCR or serology for EBV, CMV, Parvovirus B19; avoid immunosuppression until ruled out."
+    );
+end
+
 
 
