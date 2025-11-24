@@ -14,7 +14,8 @@ when
     and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
     and eval(score.total() < 10)
 then
-    score.addDifferential("Isolated aPL positivity without dsDNA/Sm antibodies: consider Primary Antiphospholipid Syndrome (APS).");
+    score.addDifferential("Isolated aPL positivity without dsDNA/Sm antibodies: consider " +
+     "Primary Antiphospholipid Syndrome (APS).");
 end
 
 rule "DDX: Sjogren syndrome"

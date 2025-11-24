@@ -92,6 +92,13 @@ public class PanelEvaluation extends JPanel {
                 var kc = ks.getKieClasspathContainer();
                 var ksession = kc.newKieSession("classificationKieSession");
 
+                // --- ACTIVATE TRACE LOGGER ---
+                org.kie.api.logger.KieRuntimeLogger logger =
+                        org.kie.api.KieServices.Factory.get()
+                                .getLoggers()
+                                .newFileLogger(ksession, "trace_classification");
+
+
 
                 ksession.setGlobal("score", score);
                 ksession.insert(ana);

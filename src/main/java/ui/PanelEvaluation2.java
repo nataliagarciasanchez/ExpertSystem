@@ -5,6 +5,8 @@ import domain.Symptom;
 import domain.SymptomType;
 import engine.Scorecard;
 import org.kie.api.KieServices;
+import org.kie.api.event.rule.AfterMatchFiredEvent;
+import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import java.util.function.BiConsumer;
@@ -310,6 +312,18 @@ public class PanelEvaluation2 extends JPanel {
 
             // --- 1. Sesion principal: CLASIFICACION EULAR/ACR ---
             KieSession ksession = kc.newKieSession("classificationKieSession");
+
+            org.kie.api.logger.KieRuntimeLogger logger1 =
+                    KieServices.Factory.get().getLoggers()
+                            .newFileLogger(ksession, "trace_classification");
+
+            ksession.addEventListener(new DefaultAgendaEventListener() {
+                @Override
+                public void afterMatchFired(AfterMatchFiredEvent event) {
+                    System.out.println("RULE FIRED → " + event.getMatch().getRule().getName());
+                }
+            });
+
             ksession.setGlobal("score", score);
 
             // Insertar ANA result (obtenido en el panel 1)
@@ -326,6 +340,17 @@ public class PanelEvaluation2 extends JPanel {
 
             // --- 2. Sesion diferencial: SI NO ES LES O POCOS PUNTOS ---
             KieSession ksessionDiff = kc.newKieSession("differentialKieSession");
+
+            org.kie.api.logger.KieRuntimeLogger logger2 =
+                    KieServices.Factory.get().getLoggers()
+                            .newFileLogger(ksessionDiff, "trace_differential");
+
+            ksessionDiff.addEventListener(new DefaultAgendaEventListener() {
+                @Override
+                public void afterMatchFired(AfterMatchFiredEvent event) {
+                    System.out.println("DIFF RULE FIRED → " + event.getMatch().getRule().getName());
+                }
+            });
             ksessionDiff.setGlobal("score", score);
 
             // Insertar ANA result (obtenido en el panel 1)
@@ -337,6 +362,16 @@ public class PanelEvaluation2 extends JPanel {
 
             // --- 3. Sesion secundaria: TRATAMIENTO ---
             KieSession ksessionTreatment = kc.newKieSession("treatmentKieSession");
+            org.kie.api.logger.KieRuntimeLogger logger3 =
+                    KieServices.Factory.get().getLoggers()
+                            .newFileLogger(ksessionTreatment, "trace_treatment");
+
+            ksessionTreatment.addEventListener(new DefaultAgendaEventListener() {
+                @Override
+                public void afterMatchFired(AfterMatchFiredEvent event) {
+                    System.out.println("TREATMENT RULE FIRED → " + event.getMatch().getRule().getName());
+                }
+            });
             ksessionTreatment.setGlobal("score", score);
 
             // Insertar ANA result (obtenido en el panel 1)
