@@ -102,13 +102,13 @@ public class PanelEvaluation2 extends JPanel {
 
         addCategoryPair.accept(
                 createCatPanelMixed("Renal", new Object[][]{
-                        {"Proteinuria (g/24h)", SymptomType.PROTEINURIA, "num", "Enter numeric value (e.g. 0.5)"},
+                        {"Urine protein (g/24h)", SymptomType.PROTEINURIA, "num", "Enter numeric value (e.g. 0.5)"},
                         {"Class III / IV nephritis (biopsy)", SymptomType.NEPHRITIS_CLASS_III_IV, "bool"},
                         {"Class V nephritis (biopsy)", SymptomType.NEPHRITIS_CLASS_V, "bool"}
                 }),
                 createCatPanelMixed("Hematologic", new Object[][]{
-                        {"Leukopenia (cells/mm³)", SymptomType.LEUKOPENIA, "num", "Enter numeric value (e.g. 4000)"},
-                        {"Thrombocytopenia (cells/mm³)", SymptomType.THROMBOCYTOPENIA, "num", "Enter numeric value (e.g. 90000)"},
+                        {"Leukocyte count (cells/mm³)", SymptomType.LEUKOPENIA, "num", "Enter numeric value (e.g. 4000)"},
+                        {"Platelet count (cells/mm³)", SymptomType.THROMBOCYTOPENIA, "num", "Enter numeric value (e.g. 90000)"},
                         {"Autoimmune hemolysis", SymptomType.AUTOIMMUNE_HEMOLYSIS, "bool"}
                 })
         );
@@ -129,11 +129,12 @@ public class PanelEvaluation2 extends JPanel {
         );
 
         addCategoryPair.accept(
-                createCatPanelBoolean("Additional symptoms (not in EULAR/ACR)", new Object[][]{
+                createCatPanelBoolean("Additional symptoms (for differential diagnosis)", new Object[][]{
                         {"Raynaud’s phenomenon", SymptomType.RAYNAUD},
                         {"Skin thickening or sclerodactyly", SymptomType.SKIN_THICKENING},
-                        {"Proximal muscle weakness", SymptomType.MUSCLE_WEAKNESS},
-                        {"Elevated CK or myositis", SymptomType.ELEVATED_CK},
+                        {"Anti-U1-RNP antibodies", SymptomType.ANTI_U1RNP},
+                        {"Drug exposure associated with DIL", SymptomType.DRUG_EXPOSURE_DIL},
+                        {"Anti-histone antibodies", SymptomType.ANTI_HISTONE},
                         {"Persistent fatigue or malaise", SymptomType.FATIGUE}
                 }),
                 new JPanel() // vacío a la derecha
