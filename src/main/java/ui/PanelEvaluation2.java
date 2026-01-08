@@ -80,7 +80,7 @@ public class PanelEvaluation2 extends JPanel {
 // -------------- Filas de categorías ---------------
         addCategoryPair.accept(
                 createCatPanelMixed("General manifestations", new Object[][]{
-                        {"Fever (°C)", SymptomType.FEVER, "num", "Use dot for decimals (e.g. 38.5)"},
+                        {"Temperature (°C)", SymptomType.FEVER, "num", "Use dot for decimals (e.g. 38.5)"},
                 }),
                 createCatPanelBoolean("Mucocutaneous", new Object[][]{
                         {"Non-scarring alopecia", SymptomType.ALOPECIA},

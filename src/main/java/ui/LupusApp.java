@@ -36,7 +36,7 @@ public class LupusApp extends JFrame {
     public Scorecard getScorecard() { return scorecard; }
 
     public LupusApp() {
-        setTitle("Clinical Decision Support System for Lupus Diagnosis");
+        setTitle("Expert System for Lupus (SLE) Diagnosis");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH); // full screen
 
@@ -59,7 +59,7 @@ public class LupusApp extends JFrame {
         setContentPane(backgroundPanel);
 
         // ---------- Fixed title ----------
-        JLabel titleLabel = new JLabel("Clinical Decision Support System for Lupus Diagnosis", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Expert System for Lupus (SLE) Diagnosis", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 48));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(140, 0, 40, 0));

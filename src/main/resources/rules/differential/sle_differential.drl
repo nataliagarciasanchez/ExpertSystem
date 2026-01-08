@@ -7,151 +7,138 @@ import engine.Scorecard
 
 global Scorecard score;
 
-rule "DDX: Primary APS"
+rule "DDX: Rheumatoid arthritis"
     salience 100
 when
-    Symptom(type == SymptomType.APL, present == true)
-    and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
-    and eval(score.total() < 10)
-then
-    score.addDifferential("Isolated aPL positivity without dsDNA/Sm antibodies: consider " +
-     "Primary Antiphospholipid Syndrome (APS).");
-end
-
-rule "DDX: Sjogren syndrome"
-    salience 90
-when
-    eval(score.total() < 10)
-    and ( Symptom(type == SymptomType.SICCA, present == true)
-       or Symptom(type == SymptomType.ANTI_SSA_RO, present == true)
-       or Symptom(type == SymptomType.ANTI_SSB_LA, present == true) )
-then
-    score.addDifferential("Sicca symptoms or anti-SSA/SSB positivity: consider Primary Sjögren’s syndrome.");
-end
-
-rule "DDX: Rheumatoid arthritis or osteoarthritis"
-    salience 80
-when
-    Symptom(type == SymptomType.ARTHRITIS, present == true)
-    and eval(score.total() < 10)
-    and not Symptom(type == SymptomType.ACUTE_RASH, present == true)
-    and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
-then
-    score.addDifferential("Sub-threshold arthritis without lupus rash: consider Rheumatoid Arthritis or Osteoarthritis.");
-end
-
-rule "DDX: Dermatomyositis or Polymyositis"
-    salience 70
-when
-    eval(score.total() < 10)
-    and Symptom(type == SymptomType.MUSCLE_WEAKNESS, present == true)
-    and Symptom(type == SymptomType.ELEVATED_CK, present == true)
-    and not Symptom(type == SymptomType.ACUTE_RASH, present == true)
+    eval(score.isEntryEligible() && score.total() < 10)
+    and Symptom(type == SymptomType.ARTHRITIS, present == true)
     and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
 then
     score.addDifferential(
-        "Proximal muscle weakness with elevated CK without lupus-specific markers: consider Dermatomyositis or Polymyositis."
+        "Inflammatory arthritis in a subthreshold case without lupus-specific antibodies: consider Rheumatoid Arthritis."
     );
 end
 
-rule "DDX: Systemic sclerosis overlap"
-    salience 60
-when
-    eval(score.total() < 10)
-    and Symptom(type == SymptomType.RAYNAUD, present == true)
-    and Symptom(type == SymptomType.SKIN_THICKENING, present == true)
-then
-    score.addDifferential("Raynaud’s phenomenon with skin thickening: consider Systemic Sclerosis or overlap syndrome.");
-end
-
-rule "DDX: ANCA vasculitis"
-    salience 50
-when
-    eval(score.total() < 10)
-    and Symptom(type == SymptomType.PROTEINURIA, present == true)
-    and ( Symptom(type == SymptomType.ANCA, present == true)
-       or Symptom(type == SymptomType.HEMATURIA, present == true) )
-then
-    score.addDifferential("Proteinuria with ANCA or hematuria: consider ANCA-associated vasculitis (MPA/GPA).");
-end
-
 rule "DDX: Drug-induced lupus"
-    salience 40
+    salience 90
 when
-    eval(score.total() < 10)
+    eval(score.isEntryEligible() && score.total() < 10)
     and ( Symptom(type == SymptomType.DRUG_EXPOSURE_DIL, present == true)
        or Symptom(type == SymptomType.ANTI_HISTONE, present == true) )
     and not ( Symptom(type == SymptomType.NEPHRITIS_CLASS_III_IV, present == true)
            or Symptom(type == SymptomType.NEPHRITIS_CLASS_V, present == true)
            or Symptom(type == SymptomType.PSYCHOSIS, present == true)
-           or Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true))
-
+           or Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true) )
 then
-    score.addDifferential("Drug exposure or anti-histone antibodies without major organ involvement: consider Drug-Induced Lupus.");
+    score.addDifferential(
+        "Drug exposure and/or anti-histone antibodies without major organ involvement: consider Drug-induced Lupus."
+    );
 end
 
-rule "DDX: Non-SLE nephropathy"
-    salience 30
+rule "DDX: Viral infection mimicking SLE"
+    salience 80
 when
-    eval(score.total() < 10)
-    and Symptom(type == SymptomType.PROTEINURIA, present == true)
-    and not ( Symptom(type == SymptomType.NEPHRITIS_CLASS_III_IV, present == true)
-           or Symptom(type == SymptomType.NEPHRITIS_CLASS_V, present == true) )
-then
-    score.addDifferential("Isolated proteinuria without lupus nephritis: consider non-SLE nephropathies (IgA, diabetic, hypertensive).");
-end
-
-rule "DDX: Viral mimic of SLE"
-    salience 20
-when
-    eval(score.total() < 10)
+    eval(score.isEntryEligible() && score.total() < 10)
     and ( Symptom(type == SymptomType.FEVER, present == true)
        or Symptom(type == SymptomType.LEUKOPENIA, present == true)
        or Symptom(type == SymptomType.THROMBOCYTOPENIA, present == true) )
     and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
 then
-    score.addDifferential("Acute febrile/cytopenic presentation with ANA+: consider viral mimic (Parvovirus B19, EBV, HCV).");
+    score.addDifferential(
+        "Acute febrile or cytopenic lupus-like presentation without lupus-specific antibodies: consider viral infection (e.g., parvovirus B19, EBV/CMV, hepatitis viruses)."
+    );
 end
 
-rule "DDX: Mixed Connective Tissue Disease"
-    salience 10
+rule "DDX: Adult-onset Still disease"
+    salience 70
 when
-    eval(score.total() < 10)
-    and Symptom(type == SymptomType.RAYNAUD, present == true)
-    and Symptom(type == SymptomType.MUSCLE_WEAKNESS, present == true)
-    and ( Symptom(type == SymptomType.SEROUS_EFFUSION, present == true)
-       or Symptom(type == SymptomType.ANTI_U1RNP, present == true) )
+    eval(score.isEntryEligible() && score.total() < 10)
+    and Symptom(type == SymptomType.FEVER, present == true)
+    and Symptom(type == SymptomType.ARTHRITIS, present == true)
+    and not Symptom(type == SymptomType.ACUTE_RASH, present == true)
     and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
-
 then
-    score.addDifferential("Raynaud, myositis and/or serositis: consider Mixed Connective Tissue Disease (anti-U1RNP).");
+    score.addDifferential(
+        "Fever and arthritis without lupus-specific autoantibodies: consider Adult-onset Still disease."
+    );
 end
 
-rule "DDX: Autoimmune thyroiditis or mild autoimmune overlap"
-    salience 5
+rule "DDX: Behcet disease"
+    salience 60
 when
-    eval(score.total() < 10)
+    eval(score.isEntryEligible() && score.total() < 10)
+    and Symptom(type == SymptomType.ORAL_ULCERS, present == true)
+    and Symptom(type == SymptomType.ARTHRITIS, present == true)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
+then
+    score.addDifferential(
+        "Oral ulcers with arthralgia/arthritis in a lupus-like presentation: consider Behçet disease."
+    );
+end
+
+rule "DDX: Sarcoidosis"
+    salience 50
+when
+    eval(score.isEntryEligible() && score.total() < 10)
+    and ( Symptom(type == SymptomType.FEVER, present == true)
+       or Symptom(type == SymptomType.FATIGUE, present == true) )
+    and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
+then
+    score.addDifferential(
+        "Systemic symptoms without lupus-specific autoantibodies: consider Sarcoidosis."
+    );
+end
+
+rule "DDX: Systemic sclerosis"
+    salience 40
+when
+    eval(score.isEntryEligible() && score.total() < 10)
+    and Symptom(type == SymptomType.RAYNAUD, present == true)
+    and Symptom(type == SymptomType.SKIN_THICKENING, present == true)
+then
+    score.addDifferential(
+        "Raynaud phenomenon with skin thickening: consider Systemic Sclerosis."
+    );
+end
+
+rule "DDX: Mixed connective tissue disease"
+    salience 30
+when
+    eval(score.isEntryEligible() && score.total() < 10)
+    and Symptom(type == SymptomType.RAYNAUD, present == true)
+    and Symptom(type == SymptomType.ANTI_U1RNP, present == true)
+    and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
+then
+    score.addDifferential(
+        "Raynaud phenomenon with anti-U1RNP positivity: consider Mixed Connective Tissue Disease."
+    );
+end
+
+rule "DDX: Thyroid disease"
+    salience 20
+when
+    eval(score.isEntryEligible() && score.total() < 10)
     and Symptom(type == SymptomType.FATIGUE, present == true)
     and not Symptom(type == SymptomType.ANTI_DSDNA_OR_ANTI_SM, present == true)
 then
-    score.addDifferential("Fatigue as isolated symptom in ANA+ patient: consider autoimmune thyroiditis or minor autoimmune overlap.");
+    score.addDifferential(
+        "Fatigue in an ANA-positive subthreshold case: consider Thyroid disease."
+    );
+end
+rule "DDX: Other conditions require external diagnostic testing"
+salience -10
+when
+    eval(score.isEntryEligible() && score.total() < 10)
+then
+    score.addDifferential(
+        "Other differential diagnoses described in clinical guidelines (e.g., endocarditis, HIV infection, Lyme disease, inflammatory bowel disease) require additional diagnostic testing not modeled in this system."
+    );
 end
 
 rule "DDX guard: register subthreshold case"
     salience 1
 when
-    eval(score.isEntryEligible() == true && score.total() < 10)
+    eval(score.isEntryEligible() && score.total() < 10)
 then
     // Marker rule for traceability
-end
-
-//review ultima opcion cae aqui si no se ajusta al resto de DDX
-rule "DDX guard: fallback UCTD"
-    salience 0
-when
-    eval(score.isEntryEligible() == true && score.total() > 0 && score.total() < 10 && score.hasDifferentials())
-then
-    score.addDifferential(
-        "ANA positive but <10 points, no other differential pattern detected: consider UCTD."
-    );
 end
