@@ -15,34 +15,22 @@ when
     eval(score.isEntryEligible() && score.total() >= 10)
 then
     score.addTreatment(
-        "Hydroxychloroquine 200–400 mg/day for all patients with SLE unless contraindicated. " +
-        "Dose ≤5 mg/kg/day. Reduces flares and improves survival (EULAR 2019–2023). " +
-        "Annual ophthalmologic monitoring recommended."
+        "Baseline therapy (all SLE patients): Hydroxychloroquine (HCQ) 200–400 mg/day unless contraindicated. " +
+        "Recommended dose ≤5 mg/kg/day. HCQ reduces flares and improves long-term survival. " +
+        "Baseline and annual ophthalmologic monitoring is required."
     );
 end
 
 
-rule "General treatment: glucocorticoid minimization"
+rule "General treatment: glucocorticoid"
     salience 95
 when
     eval(score.isEntryEligible() && score.total() >= 10)
 then
     score.addTreatment(
-        "Use glucocorticoids only as short-term bridging therapy. " +
-        "Aim for prednisone ≤5 mg/day with withdrawal if possible. " +
-        "(EULAR 2023)."
-    );
-end
-
-
-rule "General treatment: glucocorticoid dose reduction"
-    salience 90
-when
-    eval(score.isEntryEligible() && score.total() >= 10)
-then
-    score.addTreatment(
-        "Use the lowest effective glucocorticoid dose. " +
-        "Target maintenance prednisone ≤7.5 mg/day with gradual tapering."
+        "Glucocorticoid strategy: use the lowest effective dose for the shortest possible duration. " +
+        "Glucocorticoids should be used only as short-term bridging therapy. " +
+        "Target maintenance prednisone ≤5–7.5 mg/day, with progressive tapering and withdrawal whenever feasible."
     );
 end
 
@@ -54,10 +42,10 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.RENAL) >= 8)
 then
     score.addTreatment(
-        "Lupus nephritis class III/IV/V: " +
+        "Renal involvement (active lupus nephritis): " +
         "Induction therapy with mycophenolate mofetil (preferred) or cyclophosphamide. " +
-        "Maintenance with mycophenolate or azathioprine. " +
-        "High-dose IV corticosteroid pulses for severe flares."
+        "High-dose intravenous corticosteroid pulses may be required for severe flares. " +
+        "After induction, switch to maintenance therapy with mycophenolate or azathioprine."
     );
 end
 
@@ -68,9 +56,9 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.MUCUTANEOUS) >= 4)
 then
     score.addTreatment(
-        "Cutaneous lupus (acute/discoid): strict photoprotection (SPF ≥50). " +
-        "Topical corticosteroids or calcineurin inhibitors for localized lesions. " +
-        "If skin disease remains refractory despite baseline antimalarial therapy, consider methotrexate or other systemic steroid-sparing agents."
+        "Cutaneous lupus involvement: strict photoprotection (SPF ≥50) is mandatory. " +
+        "Use topical corticosteroids or calcineurin inhibitors for localized disease. " +
+        "If cutaneous activity persists despite HCQ, consider systemic steroid-sparing agents such as methotrexate."
     );
 end
 
@@ -81,11 +69,11 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.NEUROPSYCHIATRIC) >= 3)
 then
     score.addTreatment(
-        "Neuropsychiatric lupus (psychosis / seizures): " +
-        "high-dose IV methylprednisolone pulses followed by oral taper, " +
-        "plus cyclophosphamide as first-line immunosuppressant in severe inflammatory NPSLE. " +
-        "Rituximab may be considered in refractory or contraindicated cases. " +
-        "Always add symptomatic treatment (anticonvulsants, antipsychotics, etc.) and manage contributing factors."
+        "Neuropsychiatric SLE (e.g. seizures, psychosis): " +
+        "High-dose intravenous corticosteroids followed by oral taper are recommended. " +
+        "Add cyclophosphamide for severe inflammatory neuropsychiatric disease. " +
+        "Rituximab may be considered in refractory cases. " +
+        "Always combine with appropriate symptomatic treatment and management of contributing factors."
     );
 end
 
@@ -96,10 +84,10 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.MUSCULOSKELETAL) >= 6)
 then
     score.addTreatment(
-        "Musculoskeletal lupus (arthritis): " +
-        "• NSAIDs for mild symptoms, only if no renal or cardiovascular contraindication. " +
-        "• If symptoms persist, use low-dose prednisone (≤7.5 mg/day). " +
-        "• For steroid-sparing therapy: methotrexate is first-line; alternatives include leflunomide or azathioprine."
+        "Musculoskeletal involvement (arthritis): " +
+        "NSAIDs may be used for mild symptoms if no renal or cardiovascular contraindications exist. " +
+        "For persistent activity, use low-dose prednisone (≤7.5 mg/day). " +
+        "Methotrexate is the preferred steroid-sparing agent; alternatives include leflunomide or azathioprine."
     );
 end
 
@@ -110,9 +98,10 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.HEMATOLOGIC) >= 3)
 then
     score.addTreatment(
-        "Hematologic manifestations: oral prednisone or intravenous pulses depending on severity. " +
-        "Leukopenia alone may not require immunosuppression. " +
-        "If refractory thrombocytopenia or hemolytic anemia, consider intravenous immunoglobulins or rituximab."
+        "Hematologic manifestations: treatment depends on severity. " +
+        "Mild leukopenia may not require immunosuppression. " +
+        "Moderate–severe cytopenias require oral or intravenous corticosteroids. " +
+        "In refractory thrombocytopenia or hemolytic anemia, consider intravenous immunoglobulins or rituximab."
     );
 end
 
@@ -123,10 +112,11 @@ when
     eval(score.total() >= 10 && score.getPointsForDomain(Domain.SEROSAL) >= 5)
 then
     score.addTreatment(
-        "Serosal involvement: NSAIDs for mild pleuritis or pericarditis. " +
-        "If inadequate response, use low-dose prednisone (≤0.5 mg/kg/day). " +
-        "For recurrent pericarditis, add colchicine. " +
-        "Maintain hydroxychloroquine in all patients unless contraindicated."
+        "Serosal involvement (pleuritis or pericarditis): " +
+        "NSAIDs are first-line therapy for mild disease. " +
+        "If response is inadequate, add low-to-moderate dose prednisone. " +
+        "Colchicine is recommended for recurrent pericarditis. " +
+        "Hydroxychloroquine should be maintained whenever possible."
     );
 
 end
@@ -143,8 +133,8 @@ when
     )
 then
     score.addTreatment(
-            "Significant immunologic activity: maintain HCQ and add steroid-sparing immunosuppression " +
-            "(azathioprine, mycophenolate, methotrexate) depending on organ involvement. " +
-            "High-risk aPL without thrombosis: consider low-dose aspirin."
-        );
+        "Significant immunologic activity: continue hydroxychloroquine and consider steroid-sparing immunosuppressive therapy " +
+        "(azathioprine, mycophenolate or methotrexate) according to organ involvement. " +
+        "In patients with high-risk antiphospholipid antibodies without thrombosis, low-dose aspirin may be considered."
+    );
 end
