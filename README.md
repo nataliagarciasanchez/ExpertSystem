@@ -1,4 +1,4 @@
-# TFG — Automated Skin Lesion Analysis with Deep Learning and LLM Integration
+# TFG Automated Skin Lesion Analysis with Deep Learning and LLM Integration
 
 **Author:** Natalia García Sánchez  
 **Supervisor:** Rubén Juárez Cádiz  
@@ -19,6 +19,8 @@ This repository contains the full source code for a TFG (Bachelor's Thesis) on a
 ---
 
 ## Repository Structure
+
+```
 tfg-skin-lesion/
 │
 ├── segmentation_training.py       # Train U-Net++ segmentation model
@@ -31,7 +33,7 @@ tfg-skin-lesion/
 ├── server.py                      # MCP server exposing analyze_skin_lesion tool
 │
 └── README.md
-
+```
 ---
 
 ## Datasets
